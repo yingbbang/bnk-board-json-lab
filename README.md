@@ -1,28 +1,34 @@
 # BNK-BOARD-JSON-LAB
 
 순수 **HTML / CSS / JavaScript** 환경에서  
-**게시판 UI + JSON 기반 데이터 시딩(seed) 실험**을 위한 레포지토리이다.
+**게시판 UI + JSON 기반 데이터 시딩(seed) + 인증 흐름(MVP)** 을 실험하기 위한 레포지토리이다.
 
 Spring / DB 이전 단계에서  
 - 데이터 구조 설계
 - 게시판 도메인 분리
+- 인증/권한 흐름 최소 구현
 - 시드 데이터 관리 방식  
 을 검증하는 목적의 실험용 프로젝트다.
 
-### 작업기간
-2025.12.18(1일, 11:00~16:00, 점심시간은 작업하지 않음)
+---
+
+## 작업기간
+2025.12.18 (1일 / 11:00 ~ 16:00, 점심시간 제외)
 
 ---
-<br>
 
-### index.html (list) ## 이미지를 누르면 해당 페이지로 이동합니다.
+## 화면 미리보기
+
+### index.html (list)  
+이미지를 누르면 해당 페이지로 이동합니다.
 <a href="https://yingbbang.github.io/bnk-board-html/board/index.html"> 
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/snapshot-index.png"></a>
 
 ### view.html (view)
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/snapshot-view.png">
 
-### write.html (write) ## 이미지를 누르면 해당 페이지로 이동합니다.
+### write.html (write)  
+이미지를 누르면 해당 페이지로 이동합니다.
 <a href="https://yingbbang.github.io/bnk-board-html/board/write.html"> 
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/snapshot-write.png"></a>
 
@@ -32,115 +38,149 @@ Spring / DB 이전 단계에서
 ### delete.html (delete)
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/snapshot-delete.png">
 
+---
+
+## 설계 문서
+
 ### ERD
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/erd.png">
 
-### data-dictionary
+### Data Dictionary
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/data-dictionary.png">
 
-### code-definition
+### Code Definition
 <img src="https://github.com/yingbbang/bnk-board-html/blob/main/board/assets/dummy/code-definition.png">
 
+---
 
 ## 1. 프로젝트 목적
 
 - 프레임워크 없이 게시판 기능 구현
-- 게시글 데이터를 JSON 파일 기반으로 로딩
+- JSON 기반 게시글 데이터 로딩 및 시딩 실험
+- **로그인 / 회원가입 / 권한 가드의 최소 단위 구현**
 - 금융권 게시판 도메인 구조 연습
 - 추후 Spring + DB 전환을 고려한 구조 검증
-- 
+
+※ 본 프로젝트의 로그인/회원가입은 **보안 목적이 아닌 구조·흐름 검증용 데모 구현**이다.
+
 ---
 
-## 2. 전체 폴더 구조
+## 2. MVP 구현 범위
 
- 
+본 프로젝트는 아래 기능까지만을 **의도적으로 구현**한다.
+
+- 회원가입 (데모, 비밀번호 없음)
+- 로그인 / 로그아웃 (localStorage 기반)
+- 권한 가드 (USER / ADMIN 최소 분기)
+- 게시글 CRUD
+- 로그인 상태 기반 접근 차단
+
+관리자 페이지, 실제 인증 서버, 비밀번호 암호화 등은  
+**현재 단계에서는 구현 대상에서 제외**한다.
+
+---
+
+## 3. 전체 폴더 구조
+
 ```text
 BNK-BOARD-JSON-LAB
+├─ assets/
+│  ├─ css/
+│  │  ├─ common.css          # 공통 스타일
+│  │  ├─ auth.css            # 로그인/회원가입
+│  │  └─ board.css           # 게시판
+│  │
+│  └─ icons/
+│
+├─ js/
+│  ├─ core/
+│  │  ├─ storage.js          # localStorage 기반 가상 DB
+│  │  ├─ util.js             # 공통 유틸
+│  │  └─ constants.js        # ROLE / STATUS 상수
+│  │
+│  ├─ auth/
+│  │  ├─ auth.js             # 로그인 / 로그아웃
+│  │  ├─ signup.js           # 회원가입 (데모)
+│  │  ├─ guard.js            # 로그인 / 권한 가드
+│  │  └─ user.store.js       # USER 저장소
+│  │
+│  ├─ board/
+│  │  ├─ list.js             # 게시글 목록
+│  │  ├─ view.js             # 게시글 상세
+│  │  ├─ write.js            # 게시글 작성 (로그인 필요)
+│  │  ├─ edit.js             # 게시글 수정
+│  │  └─ delete.js           # 게시글 삭제 (상태 변경)
+│  │
+│  └─ seed/
+│     └─ board.seed.js       # 게시판 시드 데이터 로딩
+│
+├─ auth/
+│  ├─ login.html
+│  └─ signup.html
+│
 ├─ board/
-│ ├─ assets/
-│ │ ├─ banner/ # 배너 이미지
-│ │ ├─ css/ # 공통 / 게시판 CSS
-│ │ ├─ dummy/ # 설계 참고용 이미지·텍스트
-│ │ └─ icons/ # 아이콘 SVG
-│ │
-│ ├─ js/
-│ │ ├─ board_list.js # 게시글 목록
-│ │ ├─ board_view.js # 게시글 상세
-│ │ ├─ board_write.js # 게시글 작성
-│ │ ├─ board_edit.js # 게시글 수정
-│ │ ├─ board_delete.js # 게시글 삭제
-│ │ ├─ storage.js # localStorage 기반 가상 DB
-│ │ └─ util.js # 공통 유틸
-│ │
-│ ├─ json/
-│ │ ├─ notice.json
-│ │ ├─ faq.json
-│ │ ├─ qna.json
-│ │ ├─ it.json
-│ │ ├─ security.json
-│ │ ├─ finance_product.json
-│ │ ├─ pension.json
-│ │ ├─ retail.json
-│ │ ├─ corporate.json
-│ │ ├─ csr.json
-│ │ └─ digital_asset.json
-│ │
-│ ├─ schema/
-│ │ ├─ data-dictionary.html # 데이터 사전
-│ │ ├─ code-definition.html # 코드 정의서
-│ │ └─ erd.png # ERD
-│ │
-│ ├─ seed/
-│ │ └─ board/
-│ │ ├─ *.json # 게시판별 시드 데이터
-│ │ └─ index.js # 시드 로딩 스크립트
-│ │
-│ ├─ index.html # 게시글 목록
-│ ├─ view.html # 게시글 상세
-│ ├─ write.html # 게시글 작성
-│ ├─ edit.html # 게시글 수정
-│ ├─ delete.html # 게시글 삭제
-│ └─ audit.html # 감사/확인용 화면
+│  ├─ index.html
+│  ├─ view.html
+│  ├─ write.html
+│  ├─ edit.html
+│  └─ delete.html
+│
+├─ admin/
+│  └─ README.md              # 관리자 영역 (구조만 정의)
+│
+├─ schema/
+│  ├─ data-dictionary.html
+│  ├─ code-definition.html
+│  └─ erd.png
 │
 └─ README.md
 
 ---
 
-## 3. 주요 디렉토리 설명
+## 4. 주요 설계 포인트
 
-### `/board/js`
-- 게시판 핵심 로직
-- `storage.js`는 localStorage를 **가상 DB**처럼 사용
-- 화면 단위 기능을 파일 단위로 명확히 분리
+- 프레임워크 없이 게시판 기능 구현
+- JSON 기반 게시글 데이터 로딩 및 시딩 실험
+- **로그인 / 회원가입 / 권한 가드의 최소 단위 구현**
+- 금융권 게시판 도메인 구조 연습
+- 추후 Spring + DB 전환을 고려한 구조 검증
+- localStorage를 **가상 DB**로 사용하여 데이터 흐름 통제
+- 게시글 작성자(writer)와 행위자(created_by)를 분리한 설계
+- 물리 삭제 대신 **상태값 기반 삭제**
+- auth / board 도메인 분리로 확장성 확보
+- 관리자 기능은 **설계만 열어두고 구현하지 않음**
 
-### `/board/json`
-- 도메인별 게시글 데이터 원본
-- DB 이전 시 테이블 단위 데이터로 전환 가능하도록 설계
 
-### `/board/seed/board`
-- JSON → localStorage 초기 적재 실험 영역
-- 필요한 JSON만 선택 로딩 가능
-- 운영 데이터와 실험 데이터를 명확히 분리
+※ 본 프로젝트의 로그인/회원가입은 **보안 목적이 아닌 구조·흐름 검증용 데모 구현**이다.
 
-### `/board/schema`
-- ERD, 데이터 사전, 코드 정의서
-- 설계 의도를 코드와 분리해 문서로 관리
 
 ---
 
-## 4. 설계 특징
-- 물리 삭제가 아닌 상태값 기반 설계 전제
-- 게시판 유형 / 카테고리 분리 구조
-- 프론트엔드 단에서도 금융권 도메인 구조 연습
-- 즉시 Spring으로 가지 않고 데이터 흐름을 먼저 통제
+## 5. 관리자 기능을 구현하지 않은 이유
+
+- 인증/권한/감사 기준이 완전히 정리되기 전 단계
+- 관리자 기능은 복잡도가 급격히 증가
+- 현재 목적은 “기능 나열”이 아닌 “구조 검증”
+
+
+따라서 관리자 영역은 **폴더 및 문서 수준에서만 정의**한다.
+
 
 ---
 
-## 5. 향후 확장 계획
+## 6. 향후 확장 계획
 
 - JSON → REST API → DB 전환
 - Spring Boot + MyBatis 연계
-- 권한(Role) 기반 화면 분기
+- 관리자 페이지 구현
+- 금융권 게시판 도메인 구조 연습
 - 감사 로그 / 이력 관리 고도화
+- 실제 인증 서버 연동
 
-# bnk-board-json-lab
+
+---
+
+## 정리
+
+이 프로젝트는 “완성형 서비스”가 아니라
+**금융권 기준으로 설계 사고를 검증하기 위한 최소 단위 구현(MVP)** 이다.
