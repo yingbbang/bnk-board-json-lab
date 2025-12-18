@@ -184,3 +184,63 @@ BNK-BOARD-JSON-LAB
 
 이 프로젝트는 “완성형 서비스”가 아니라
 **금융권 기준으로 설계 사고를 검증하기 위한 최소 단위 구현(MVP)** 이다.
+
+
+
+---
+
+## 7. Spring 전환 시 폴더 매핑 전략
+
+본 프로젝트는 순수 HTML / CSS / JS 기반이지만,  
+**Spring MVC 구조로의 전환을 전제로 폴더 및 도메인을 분리**하여 설계하였다.
+
+현재 프론트엔드 구조는 Spring Boot 환경으로 거의 그대로 매핑 가능하다.
+
+---
+
+### 7-1. 폴더 매핑 표
+
+| 현재 구조 | Spring Boot 전환 |
+|---|---|
+| `js/core/storage.js` | Repository / Mapper |
+| `js/auth/auth.js` | AuthService |
+| `js/auth/guard.js` | Interceptor / AOP |
+| `js/auth/user.store.js` | UserRepository |
+| `js/board/*.js` | BoardService |
+| `auth/*.html` | `templates/auth/*.html` |
+| `board/*.html` | `templates/board/*.html` |
+| `constants.js` | Enum / Code Table |
+| `seed/*.js` | DataInitializer |
+| `schema/erd.png` | DB ERD |
+
+---
+
+### 7-2. Spring 패키지 구조 예시
+
+```text
+kr.co.bnk.board
+├─ controller
+│  ├─ AuthController
+│  └─ BoardController
+├─ service
+│  ├─ AuthService
+│  └─ BoardService
+├─ repository
+│  ├─ UserRepository
+│  └─ BoardRepository
+├─ domain
+│  ├─ User
+│  └─ Board
+└─ common
+   ├─ AuthInterceptor
+   └─ Constants
+
+---
+
+### 7-3. 설계 의도 (면접 설명용)
+
+“프론트엔드 단계에서부터
+auth / board / core 도메인을 분리해 구조를 설계했기 때문에
+Spring으로 전환하더라도 구조를 거의 그대로 가져갈 수 있습니다.”
+
+
