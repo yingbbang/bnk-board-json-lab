@@ -134,7 +134,7 @@ BNK-BOARD-JSON-LAB
 │  └─ erd.png
 │
 └─ README.md
-
+```
 ---
 
 ## 4. 주요 설계 포인트
@@ -234,7 +234,7 @@ kr.co.bnk.board
 └─ common
    ├─ AuthInterceptor
    └─ Constants
-
+```
 ---
 
 ### 7-3. 설계 의도 (면접 설명용)
